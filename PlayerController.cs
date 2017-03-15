@@ -97,7 +97,9 @@ public class PlayerController : MonoBehaviour
 
     // • The same as antiBunnyHopFactor, but private & assigned in the start function.
     // • Set in the start function & kept private so the player can't modify the value.
-    private int jumpTimer;  
+    private int jumpTimer;
+
+    public float pushPower = 2.0f;
 
     // • The start function, called in the first frame only.
     void Start()
@@ -334,7 +336,16 @@ public class PlayerController : MonoBehaviour
 
         // • Store the contact point found when calling OnControllerColliderHit to contactPoint,
         // • so we can use it in FixedUpdate if needed.
-        contactPoint = hit.point;  
+        contactPoint = hit.point;
+
+
+        Rigidbody body = hit.collider.attachedRigidbody;
+        if (body == null || body.isKinematic)
+            return;
+        if (hit.moveDirection.y < -0.3f)
+            return;
+        Vector3 pushDir = new Vector3(hit.moveDirection.x, 0, hit.moveDirection.z);
+        body.velocity = pushDir * pushPower;
     }
 
     // If falling damage occured, this is the place to do something about it. You can make the player
